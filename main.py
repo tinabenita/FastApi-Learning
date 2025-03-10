@@ -4,6 +4,7 @@ from fastapi import FastAPI, Form,  File, UploadFile, HTTPException, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.encoders import jsonable_encoder
 
 
 
@@ -88,3 +89,17 @@ async def read_request_validation(item_id: int):
     if item_id == 3:
         raise HTTPException(status_code=418, detail="Nope! I don't like 3.")
     return {"item_id": item_id}
+
+# JSON Compatible Encoder 
+fake_db = {}
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+
+@app.put("/jsonencoder/{item_id}")
+def jsonecode_update_item(item_id: str, item: Item):
+    json_compatible_item_data = jsonable_encoder(item)
+    fake_db[item_id] = json_compatible_item_data
+    return json_compatible_item_data
