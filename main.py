@@ -1,6 +1,6 @@
 from typing import Annotated
 from pydantic import BaseModel
-from fastapi import FastAPI, Form,  File, UploadFile
+from fastapi import FastAPI, Form,  File, UploadFile, HTTPException
 
 
 app = FastAPI()
@@ -41,3 +41,17 @@ async def import_file_form(
         "token": token,
         "fileb_content_type": fileb.content_type,
     }
+
+
+# Handling Errors
+items = {"foo": "The Foo Wrestlers"}
+
+@app.get("/checkitems/{item_id}")
+async def read_item(item_id: str):
+    if item_id not in items:
+        raise HTTPException(
+            status_code=404, 
+            detail="Item not found",
+            headers={"X-Error": "There goes my error"},
+        )
+    return {"item": items[item_id]}
