@@ -1,7 +1,7 @@
 from typing import Annotated
 from pydantic import BaseModel
-from fastapi import FastAPI, Form
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, Form,  File, UploadFile
+
 
 app = FastAPI()
 
@@ -29,3 +29,15 @@ async def create_upload_file(file: UploadFile):
 async def create_upload_files(files: list[UploadFile]):
     return {"filenames": [file.filename for file in files]}
 
+#  Import form and files
+@app.post("/importfileform/")
+async def import_file_form(
+    file: Annotated[bytes, File()],
+    fileb: Annotated[UploadFile, File()],
+    token: Annotated[str, Form()],
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": fileb.content_type,
+    }
