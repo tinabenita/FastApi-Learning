@@ -1,6 +1,6 @@
 from typing import Annotated
 from pydantic import BaseModel
-from fastapi import FastAPI, Form,  File, UploadFile, HTTPException, Request
+from fastapi import FastAPI, Form,  File, UploadFile, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -103,3 +103,17 @@ def jsonecode_update_item(item_id: str, item: Item):
     json_compatible_item_data = jsonable_encoder(item)
     fake_db[item_id] = json_compatible_item_data
     return json_compatible_item_data
+
+# Dependency Injection
+async def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):
+    return {"q": q, "skip": skip, "limit": limit}
+
+CommonDepends = Annotated[dict, Depends(common_parameters)]
+
+@app.get("/dependitems")
+async def read_items(commons: CommonDepends):
+    return commons
+
+@app.get("/dependusers/")
+async def read_users(commons: CommonDepends):
+    return commons
