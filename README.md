@@ -4,7 +4,7 @@
 
 ### Start the virtual environment 
 ```sh
-.\venv\Scripts\activate
+.\.venv\Scripts\activate
 ```
 
 ### Run the API 
